@@ -1,25 +1,95 @@
-import logo from './logo.svg';
-import './App.css';
+/*global chrome*/
+import "./App.css";
+import axios from "axios";
 
-function App() {
+import { useState, useEffect } from "react";
+const App = () => {
+  const [playBack, setPlayBack] = useState(null);
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get(`https://team-10-maptube.azurewebsites.net/movies`)
+      .then((res) => {
+        const movies = res.data.movies;
+        setData(movies);
+        console.log(data);
+      });
+  }, []);
+
+  useEffect(() => {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      let msg = {
+        function: "status",
+      };
+      chrome.tabs.sendMessage(tabs[0].id, msg, function (response) {
+        if (response) {
+          if (response.paused) {
+            setPlayBack(true);
+          } else {
+            setPlayBack(false);
+          }
+        }
+      });
+    });
+  }, []);
+
+  const getVideoStatus = () => {
+    setPlayBack(!playBack);
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      // query the active tab, which will be only one tab
+      //and inject the script in i
+      let msg = {
+        function: "playback",
+      };
+      chrome.tabs.sendMessage(tabs[0].id, msg);
+    });
+  };
+  const media = (status) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      var msg = {
+        function: "media",
+        frontBack: status,
+      };
+      chrome.tabs.sendMessage(tabs[0].id, msg);
+    });
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+      <div className="info">
+        <p>Maptube</p>
+        {data ? data.map((movie) => <p>{movie.title}</p>) : <p>loading</p>}
+      </div>
+
+      <div className="media">
+        <button
+          id="forward"
+          onClick={() => {
+            media("backward");
+          }}
         >
-          Learn React
-        </a>
-      </header>
+          <p>rewind</p>
+        </button>
+        <button
+          id="playPause"
+          onClick={() => {
+            getVideoStatus();
+          }}
+        >
+          <p>{playBack ? "play" : "pause"}</p>
+        </button>
+        <button
+          id="rewind"
+          onClick={() => {
+            media("forward");
+          }}
+        >
+          <p>forward</p>
+        </button>
+      </div>
     </div>
   );
-}
+};
 
 export default App;
