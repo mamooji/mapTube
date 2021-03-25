@@ -1,4 +1,5 @@
 /*global chrome*/
+import axios from "axios";
 // If your extension doesn't need a content script, just leave this file empty
 
 // This is an example of a script that will run on every page. This can alter pages
@@ -64,9 +65,20 @@ const playback = (request, sender, sendResponse) => {
           video.click();
         }
         break;
-      case "url":
-        console.log("url ran");
-        console.log(request.url);
+      case "id":
+        console.log("id ran");
+        console.log(request.videoID);
+        axios
+          .post(
+            `https://team-10-maptube.azurewebsites.net/get_ads?id=${request.videoID}`
+          )
+          .then(function (response) {
+            console.log(response, "response AXIOS");
+          })
+          .catch(function (error) {
+            console.log(error);
+            console.log(error, "error AXIOS");
+          });
         break;
       case "media":
         console.log("media ran");

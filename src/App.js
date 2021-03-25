@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 const App = () => {
   const [playBack, setPlayBack] = useState(null);
   const [data, setData] = useState(null);
+  // const [videoID, setVideoID] = useState("");
 
   useEffect(() => {
     axios
@@ -15,6 +16,19 @@ const App = () => {
         setData(movies);
         console.log(data);
       });
+    // chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    //   let msg = {
+    //     function: "id",
+    //   };
+    //   chrome.tabs.sendMessage(tabs[0].id, msg, function (response) {
+    //     console.log(response, "respoonse");
+    //     if (response) {
+    //       setVideoID(response.id);
+    //     } else {
+    //       setVideoID("gang");
+    //     }
+    //   });
+    // });
   }, []);
 
   useEffect(() => {
@@ -23,6 +37,7 @@ const App = () => {
         function: "status",
       };
       chrome.tabs.sendMessage(tabs[0].id, msg, function (response) {
+        console.log(response, "statusss");
         if (response) {
           if (response.paused) {
             setPlayBack(true);
@@ -58,8 +73,12 @@ const App = () => {
   return (
     <div className="App">
       <div className="info">
-        <p>Maptube</p>
-        {data ? data.map((movie) => <p>{movie.title}</p>) : <p>loading</p>}
+        <p>Maptube: </p>
+        {data ? (
+          data.map((movie) => <p key={movie.title}>{movie.title}</p>)
+        ) : (
+          <p>loading</p>
+        )}
       </div>
 
       <div className="media">

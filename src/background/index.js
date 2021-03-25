@@ -12,11 +12,11 @@
 
 console.log("backround is running");
 
-const checkURL = (tab) => {
+const checkURL = (tab, id) => {
   let msg = {
     txt: "this is the tab from BKG",
-    url: tab.url,
-    function: "url",
+    videoID: id,
+    function: "id",
   };
 
   chrome.tabs.sendMessage(tab.id, msg);
@@ -29,9 +29,18 @@ chrome.tabs.onUpdated.addListener((tabID, changeInfo, tab) => {
 
   chrome.tabs.get(tabID, (tab) => {
     if (tab.status === "complete") {
-      console.log(tab, "TAB");
-      console.log(tab.url, "URL");
-      checkURL(tab);
+      // console.log(tab, "TAB");
+      // console.log(tab.url, "URL");
+
+      let videoID = urlToID(tab.url);
+      console.log(videoID);
+      checkURL(tab, videoID);
     }
   });
 });
+
+const urlToID = (url) => {
+  var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+  var match = url.match(regExp);
+  return match && match[7].length === 11 ? match[7] : false;
+};
