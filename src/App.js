@@ -6,6 +6,9 @@ import { useState, useEffect } from "react";
 const App = () => {
   const [playBack, setPlayBack] = useState(null);
   const [data, setData] = useState(null);
+  const [searchData, setSearchData] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
   // const [videoID, setVideoID] = useState("");
 
   useEffect(() => {
@@ -14,7 +17,6 @@ const App = () => {
       .then((res) => {
         const movies = res.data.movies;
         setData(movies);
-        console.log(data);
       });
     // chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     //   let msg = {
@@ -60,25 +62,59 @@ const App = () => {
       chrome.tabs.sendMessage(tabs[0].id, msg);
     });
   };
+
   const media = (status) => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       var msg = {
         function: "media",
         frontBack: status,
       };
+
+      localStorage.setItem();
       chrome.tabs.sendMessage(tabs[0].id, msg);
     });
+  };
+
+  const search = () => {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      var msg = {
+        function: "search",
+        term: searchTerm,
+      };
+      console.log("Search term in app.js", searchTerm);
+
+      chrome.tabs.sendMessage(tabs[0].id, msg, function (response) {
+        if (response.data.search) {
+          setSearchData(response.data.search);
+        } else {
+          console.log("error", response);
+        }
+      });
+    });
+    return true;
   };
 
   return (
     <div className="App">
       <div className="info">
         <p>Maptube: </p>
-        {data ? (
-          data.map((movie) => <p key={movie.title}>{movie.title}</p>)
-        ) : (
-          <p>loading</p>
-        )}
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+          }}
+        />
+        <input
+          type="button"
+          value="Search"
+          onClick={() => {
+            search();
+          }}
+        />
+        {searchData
+          ? searchData.preview.map((res) => <p key={res}>{res}</p>)
+          : " "}
       </div>
 
       <div className="media">

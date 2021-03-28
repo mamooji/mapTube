@@ -37,7 +37,8 @@ import axios from "axios";
 //   console.log("getURL function ran");
 // };
 // chrome.runtime.onMessage.addListener(getURL);
-
+var timeVar;
+var currentVideoID;
 const playback = (request, sender, sendResponse) => {
   //GET VIDEO ELEMENT
   var video = document.querySelector("video");
@@ -68,12 +69,19 @@ const playback = (request, sender, sendResponse) => {
       case "id":
         console.log("id ran");
         console.log(request.videoID);
+        console.log(
+          `https://team-10-maptube.azurewebsites.net/get_transcript?id=${request.videoID}`
+        );
+
         axios
           .post(
-            `https://team-10-maptube.azurewebsites.net/get_ads?id=${request.videoID}`
+            `https://team-10-maptube.azurewebsites.net/get_transcript?id=${request.videoID}`
           )
           .then(function (response) {
-            console.log(response, "response AXIOS");
+            console.log(response.data, "response AXIOS");
+            clearTime();
+            timeVar = setInterval(() => checkTime(response, video), 1500);
+            currentVideoID = request.videoID;
           })
           .catch(function (error) {
             console.log(error);
@@ -88,6 +96,30 @@ const playback = (request, sender, sendResponse) => {
           video.currentTime = video.currentTime - 10;
         }
         break;
+      case "search":
+        console.log("search ran");
+        clearTime();
+        console.log("search term:", request.term);
+        axios
+          .post(
+            `https://team-10-maptube.azurewebsites.net/get_search?id=${currentVideoID}&term=${request.term}`
+          )
+          .then(function (response) {
+            if (response) {
+              console.log("response we finna send", response.data);
+              sendResponse({
+                status: true,
+                data: response.data,
+                tabID: request.tabID,
+              });
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+            console.log(error, "error AXIOS");
+          });
+        return true;
+        break;
       default:
         console.log("default");
     }
@@ -95,5 +127,39 @@ const playback = (request, sender, sendResponse) => {
     console.log("no video found");
   }
 };
+
+const checkTime = (response, video) => {
+  try {
+    for (let i = 0; i < response.data.videoAd.start.length; i++) {
+      if (
+        video.currentTime > response.data.videoAd.start[i] &&
+        video.currentTime <
+          response.data.videoAd.start[i] + response.data.videoAd.skip[i]
+      ) {
+        video.currentTime =
+          response.data.videoAd.start[i] + response.data.videoAd.skip[i];
+      }
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const clearTime = () => {
+  clearInterval(timeVar);
+};
+
+async function getSearch(request) {
+  try {
+    const response = await axios.post(
+      `https://team-10-maptube.azurewebsites.net/get_search?id=${currentVideoID}&term=${request.term}`
+    );
+    console.log("response from search", response.data);
+    return response.data;
+  } catch (error) {
+    console.log("response from search", error);
+    return error;
+  }
+}
 
 chrome.runtime.onMessage.addListener(playback);
