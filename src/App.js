@@ -70,7 +70,7 @@ const App = () => {
         frontBack: status,
       };
 
-      localStorage.setItem();
+      // localStorage.setItem();
       chrome.tabs.sendMessage(tabs[0].id, msg);
     });
   };
