@@ -70,12 +70,12 @@ const playback = (request, sender, sendResponse) => {
         console.log("id ran");
         console.log(request.videoID);
         console.log(
-          `https://team-10-maptube.azurewebsites.net/get_transcript?id=${request.videoID}`
+          `https://team-10-maptube.azurewebsites.net/get_sponsors?id=${request.videoID}`
         );
 
         axios
           .post(
-            `https://team-10-maptube.azurewebsites.net/get_transcript?id=${request.videoID}`
+            `https://team-10-maptube.azurewebsites.net/get_sponsors?id=${request.videoID}`
           )
           .then(function (response) {
             console.log(response.data, "response AXIOS");
