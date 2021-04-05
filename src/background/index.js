@@ -25,12 +25,13 @@ const checkURL = (tab, id) => {
 // chrome.browserAction.onClicked.addListener(buttonClicked);
 
 chrome.tabs.onUpdated.addListener((tabID, changeInfo, tab) => {
-  // console.log(changeInfo, "change info");
-
   chrome.tabs.get(tabID, (tab) => {
-    if (tab.status === "complete") {
+    if (
+      tab.status === "complete" &&
+      tab.url.includes("https://www.youtube.com/watch?")
+    ) {
       // console.log(tab, "TAB");
-      // console.log(tab.url, "URL");
+      console.log(tab.url, "URL");
 
       let videoID = urlToID(tab.url);
       console.log(videoID);

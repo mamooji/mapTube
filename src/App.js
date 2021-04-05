@@ -1,37 +1,14 @@
 /*global chrome*/
 import "./App.css";
-import axios from "axios";
 
 import { useState, useEffect } from "react";
 const App = () => {
-  const [playBack, setPlayBack] = useState(null);
-  const [data, setData] = useState(null);
-  const [searchData, setSearchData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // const [videoID, setVideoID] = useState("");
-
-  useEffect(() => {
-    axios
-      .get(`https://team-10-maptube.azurewebsites.net/movies`)
-      .then((res) => {
-        const movies = res.data.movies;
-        setData(movies);
-      });
-    // chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    //   let msg = {
-    //     function: "id",
-    //   };
-    //   chrome.tabs.sendMessage(tabs[0].id, msg, function (response) {
-    //     console.log(response, "respoonse");
-    //     if (response) {
-    //       setVideoID(response.id);
-    //     } else {
-    //       setVideoID("gang");
-    //     }
-    //   });
-    // });
-  }, []);
+  const [playBack, setPlayBack] = useState(null);
+  const [searchData, setSearchData] = useState(null);
+  const [videoTitle, setVideoTitle] = useState(null);
+  const [videoChannel, setVideoChannel] = useState(null);
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -41,6 +18,8 @@ const App = () => {
       chrome.tabs.sendMessage(tabs[0].id, msg, function (response) {
         console.log(response, "statusss");
         if (response) {
+          setVideoTitle(response.videoTitle);
+          setVideoChannel(response.videoChannel);
           if (response.paused) {
             setPlayBack(true);
           } else {
@@ -70,7 +49,6 @@ const App = () => {
         frontBack: status,
       };
 
-      // localStorage.setItem();
       chrome.tabs.sendMessage(tabs[0].id, msg);
     });
   };
@@ -85,6 +63,7 @@ const App = () => {
 
       chrome.tabs.sendMessage(tabs[0].id, msg, function (response) {
         if (response.data.search) {
+          console.log(response.data);
           setSearchData(response.data.search);
         } else {
           console.log("error", response);
@@ -97,7 +76,9 @@ const App = () => {
   return (
     <div className="App">
       <div className="info">
-        <p>Maptube: </p>
+        <p>Maptube</p>
+        {videoTitle ? <p>Title: {videoTitle}</p> : <p>video title not found</p>}
+        {videoChannel ? <p>Channel: {videoChannel}</p> : ""}
         <input
           type="text"
           value={searchTerm}
@@ -113,7 +94,7 @@ const App = () => {
           }}
         />
         {searchData
-          ? searchData.preview.map((res) => <p key={res}>{res}</p>)
+          ? searchData.preview.map((data) => <p key={data}>{data}</p>)
           : " "}
       </div>
 
