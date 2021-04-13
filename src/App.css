@@ -16,6 +16,10 @@
   display: flex;
   justify-content: space-between;
 }
+.searchResult {
+  display: flex;
+  justify-content: space-between;
+}
 
 .info {
   display: flex;

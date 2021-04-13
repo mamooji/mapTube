@@ -1,42 +1,5 @@
 /*global chrome*/
 import axios from "axios";
-// If your extension doesn't need a content script, just leave this file empty
-
-// This is an example of a script that will run on every page. This can alter pages
-// Don't forget to change `matches` in manifest.json if you want to only change specific webpages
-// printAllPageLinks();
-
-// This needs to be an export due to typescript implementation limitation of needing '--isolatedModules' tsconfig
-
-// export function printAllPageLinks() {
-//   const allLinks = Array.from(document.querySelectorAll('a')).map(
-//     link => link.href
-//   );
-
-//   console.log('-'.repeat(30));
-//   console.log(
-//     `These are all ${allLinks.length} links on the current page that have been printed by the Sample Create React Extension`
-//   );
-//   console.log(allLinks);
-//   console.log('-'.repeat(30));
-// }
-
-// console.log("content scripts");
-
-// const getMessage = (request, sender, sendResponse) => {
-//   console.log(request);
-
-// const getURL = (request, sender, sendResponse) => {
-//   console.log(request, "FROM BKG");
-// };
-
-// chrome.runtime.onMesage.addListener(getMessage);
-
-// const getURL = (request, sender, sendResponse) => {
-//   console.log(request, "FROM BKG");
-//   console.log("getURL function ran");
-// };
-// chrome.runtime.onMessage.addListener(getURL);
 var timeVar;
 var currentVideoID;
 const playback = (request, sender, sendResponse) => {
@@ -50,8 +13,6 @@ const playback = (request, sender, sendResponse) => {
     switch (request.function) {
       case "status":
         console.log("status ran");
-        console.log(title);
-        console.log(channel);
         if (video.paused) {
           sendResponse({
             videoChannel: channel,
@@ -71,32 +32,11 @@ const playback = (request, sender, sendResponse) => {
       case "playback":
         console.log("playback ran");
         if (video.duration) {
-          console.log(video.duration);
-          // video.currentTime = "100";
           video.click();
         }
         break;
       case "id":
         console.log("id ran");
-        // var length = 0;
-        // length = Math.floor(video.duration / 10);
-
-        // // analyticalData.apply(null, Array(length)).map(Num)
-        // analyticalData.length = length;
-        // let i = 0;
-        // while (i < length) {
-        //   analyticalData[i] = 0;
-        //   i++;
-        // }
-        // console.log("array", analyticalData);
-        // console.log("sengment Length", length);
-        // console.log("duration", video.duration);
-
-        // console.log("request.videoID", request.videoID);
-        console.log(
-          `https://team-10-maptube.azurewebsites.net/get_sponsors?id=${request.videoID}`
-        );
-
         axios
           .post(
             `https://team-10-maptube.azurewebsites.net/get_sponsors?id=${request.videoID}`
@@ -109,7 +49,6 @@ const playback = (request, sender, sendResponse) => {
           })
           .catch(function (error) {
             console.log(error);
-            console.log(error, "error AXIOS");
           });
         break;
       case "media":
@@ -124,6 +63,7 @@ const playback = (request, sender, sendResponse) => {
         console.log("search ran");
         clearTime();
         console.log("search term:", request.term);
+        console.log("video ID:", currentVideoID);
         axios
           .post(
             `https://team-10-maptube.azurewebsites.net/get_search?id=${currentVideoID}&term=${request.term}`
@@ -139,7 +79,6 @@ const playback = (request, sender, sendResponse) => {
             }
           })
           .catch(function (error) {
-            console.log(error);
             console.log(error, "error AXIOS");
           });
         return true;

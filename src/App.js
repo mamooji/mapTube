@@ -62,8 +62,7 @@ const App = () => {
       console.log("Search term in app.js", searchTerm);
 
       chrome.tabs.sendMessage(tabs[0].id, msg, function (response) {
-        if (response.data.search) {
-          console.log(response.data);
+        if (response) {
           setSearchData(response.data.search);
         } else {
           console.log("error", response);
@@ -93,8 +92,14 @@ const App = () => {
             search();
           }}
         />
+
         {searchData
-          ? searchData.preview.map((data) => <p key={data}>{data}</p>)
+          ? searchData.map((data) => (
+              <div key={data.time} className="searchResult">
+                <p>{data.text}</p>
+                <p style={{ paddingLeft: "2rem" }}>{data.time}</p>
+              </div>
+            ))
           : " "}
       </div>
 
