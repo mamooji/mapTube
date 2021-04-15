@@ -207,8 +207,13 @@ const checkTime = (response, video) => {
       var tempTime = Math.floor(videoLength / 10);
       try {
         axios.post(
+<<<<<<< HEAD
           `https://team-10-maptube.azurewebsites.net/get_analytics?id=${currentVideoID}&dataArray=${data}`
         );
+=======
+          `https://team-10-maptube.azurewebsites.net/store_analytics?id=${currentVideoID}&dataArray=${data}`
+        )
+>>>>>>> ea685553ef68160e683998890753fb2cb8be93ae
       } catch (err) {
         console.log(err);
       }
