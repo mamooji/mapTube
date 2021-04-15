@@ -39,11 +39,8 @@ const playback = (request, sender, sendResponse) => {
         }
         break;
       case "id":
-        console.log("id ran");
-        currentVideoID = request.videoID;
+        console.log("id ran");  
         videoLength = video.duration;
-        clearTime();
-        timeVar = setInterval(() => checkTime(0, video), 1500);
         axios
           .post(
             `https://team-10-maptube.azurewebsites.net/get_sponsors?id=${request.videoID}`
@@ -101,18 +98,18 @@ const checkTime = (response, video) => {
   try {
     
 
-    // for (let i = 0; i < response.data.videoAd.start.length; i++) {
-    //   if (
-    //     video.currentTime > response.data.videoAd.start[i] &&
-    //     video.currentTime <
-    //       response.data.videoAd.start[i] + response.data.videoAd.skip[i]
-    //   ) {
-    //     video.currentTime =
-    //       response.data.videoAd.start[i] + response.data.videoAd.skip[i];
-    //   }
+    for (let i = 0; i < response.data.videoAd.start.length; i++) {
+      if (
+        video.currentTime > response.data.videoAd.start[i] &&
+        video.currentTime <
+          response.data.videoAd.start[i] + response.data.videoAd.skip[i]
+      ) {
+        video.currentTime =
+          response.data.videoAd.start[i] + response.data.videoAd.skip[i];
+      }
 
       
-    // }
+    }
 
     if (currentVideoID !== prevID) {
       prevID = currentVideoID;
