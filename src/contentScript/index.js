@@ -4,6 +4,7 @@ var timeVar;
 var currentVideoID;
 var prevID;
 var data = [];
+var videoLength;
 const playback = (request, sender, sendResponse) => {
   //GET VIDEO ELEMENT
   var video = document.querySelector("video");
@@ -40,6 +41,7 @@ const playback = (request, sender, sendResponse) => {
       case "id":
         console.log("id ran");
         currentVideoID = request.videoID;
+        videoLength = video.duration;
         clearTime();
         timeVar = setInterval(() => checkTime(0, video), 1500);
         axios
@@ -114,7 +116,7 @@ const checkTime = (response, video) => {
 
     if (currentVideoID !== prevID) {
       prevID = currentVideoID;
-      var tempTime = Math.floor(video.length/10);
+      var tempTime = Math.floor(videoLength/10);
       try {
         axios.post(
           `https://team-10-maptube.azurewebsites.net/get_analytics?id=${currentVideoID}&dataArray=${data}&length=${tempTime}`
@@ -122,12 +124,18 @@ const checkTime = (response, video) => {
       } catch (err) {
         console.log(err);
       }
+      console.log("Video Length: ", tempTime);
       data.length = 0;
+      data.length = tempTime;
     }
     else if (currentVideoID === prevID) {
       var currentElement = Math.floor(video.currentTime/10);
       data[currentElement] = 1;
-      console.log("Inside of loop for analytics: ");
+      for(var z = 0; z < data.length; z++) {
+        if (data[z] !== 1) {
+          data[z] = 0;
+        }
+      }
       console.log(data);
     }
   } catch (err) {
