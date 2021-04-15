@@ -2,6 +2,9 @@
 import axios from "axios";
 var timeVar;
 var currentVideoID;
+var prevID;
+var data = [];
+var videoLength;
 const playback = (request, sender, sendResponse) => {
   //GET VIDEO ELEMENT
   var video = document.querySelector("video");
@@ -36,7 +39,8 @@ const playback = (request, sender, sendResponse) => {
         }
         break;
       case "id":
-        console.log("id ran");
+        console.log("id ran");  
+        
         axios
           .post(
             `https://team-10-maptube.azurewebsites.net/get_sponsors?id=${request.videoID}`
@@ -44,6 +48,7 @@ const playback = (request, sender, sendResponse) => {
           .then(function (response) {
             console.log(response.data, "response AXIOS");
             clearTime();
+            videoLength = video.duration;
             timeVar = setInterval(() => checkTime(response, video), 1500);
             currentVideoID = request.videoID;
           })
@@ -92,6 +97,8 @@ const playback = (request, sender, sendResponse) => {
 
 const checkTime = (response, video) => {
   try {
+    
+
     for (let i = 0; i < response.data.videoAd.start.length; i++) {
       if (
         video.currentTime > response.data.videoAd.start[i] &&
@@ -101,6 +108,32 @@ const checkTime = (response, video) => {
         video.currentTime =
           response.data.videoAd.start[i] + response.data.videoAd.skip[i];
       }
+
+      
+    }
+
+    if (currentVideoID !== prevID) {
+      prevID = currentVideoID;
+      var tempTime = Math.floor(videoLength/10);
+      try {
+        axios.post(
+          `https://team-10-maptube.azurewebsites.net/get_analytics?id=${currentVideoID}&dataArray=${data}`
+        )
+      } catch (err) {
+        console.log(err);
+      }
+      console.log("Video Length: ", tempTime);
+      data.length = 0;
+      data.length = tempTime;
+      for(var z = 0; z < data.length; z++) {  
+        data[z] = 0;
+      }
+    }
+    else if (currentVideoID === prevID) {
+      var currentElement = Math.floor(video.currentTime/10);
+      data[currentElement] = 1;
+      
+      console.log(data);
     }
   } catch (err) {
     console.log(err);
