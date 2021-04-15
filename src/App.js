@@ -3,8 +3,8 @@ import "./App.css";
 
 import { useState, useEffect } from "react";
 const App = () => {
+  //State variables
   const [searchTerm, setSearchTerm] = useState("");
-
   const [playBack, setPlayBack] = useState(null);
   const [searchData, setSearchData] = useState(null);
   const [videoTitle, setVideoTitle] = useState(null);
@@ -30,11 +30,19 @@ const App = () => {
     });
   }, []);
 
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  //  Function:       getVideoStatus
+  //
+  //  Description:    this function goes to get the current status of the video from the
+  //                  content script
+  //
+  //  Parameters:     NA
+  //
+  //  Return:         NA
+  ///////////////////////////////////////////////////////////////////////////////////////////////
   const getVideoStatus = () => {
     setPlayBack(!playBack);
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      // query the active tab, which will be only one tab
-      //and inject the script in i
       let msg = {
         function: "playback",
       };
@@ -42,6 +50,16 @@ const App = () => {
     });
   };
 
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  //  Function:       media
+  //
+  //  Description:    This function sends the command to forward or backward the video to
+  //                  the content script
+  //
+  //  Parameters:     status
+  //
+  //  Return:         NA
+  ///////////////////////////////////////////////////////////////////////////////////////////////
   const media = (status) => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       var msg = {
@@ -53,6 +71,16 @@ const App = () => {
     });
   };
 
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  //  Function:       search
+  //
+  //  Description:    This function sends a search term to the content script
+  //                  it then recieves a response the text and time stamps of the result
+  //
+  //  Parameters:     NA
+  //
+  //  Return:         TRUE
+  ///////////////////////////////////////////////////////////////////////////////////////////////
   const search = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       var msg = {
