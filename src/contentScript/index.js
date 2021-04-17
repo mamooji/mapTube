@@ -156,10 +156,13 @@ const status = (request, video, sendResponse, title, channel) => {
 ///////////////////////////////////////////////////////////////////////////////////////////////
 const media = (request, video) => {
   console.log("media ran");
+  console.log(request);
   if (request.frontBack === "forward") {
     video.currentTime = video.currentTime + 10;
-  } else {
+  } else if (request.frontBack === "backward") {
     video.currentTime = video.currentTime - 10;
+  } else {
+    video.currentTime = request.time;
   }
 };
 

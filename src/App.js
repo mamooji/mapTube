@@ -31,6 +31,45 @@ const App = () => {
   }, []);
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
+  //  Function:      secondsToHMS
+  //
+  //  Description:    this function converts the time in seconds to minutes, hrs, etc
+  //
+  //
+  //  Parameters:     seconds
+  //
+  //  Return:         time
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+
+  const secondsToHms = (seconds) => {
+    if (!seconds) return "";
+
+    let duration = seconds;
+    let hours = duration / 3600;
+    duration = duration % 3600;
+
+    let min = parseInt(duration / 60);
+    duration = duration % 60;
+
+    let sec = parseInt(duration);
+
+    if (sec < 10) {
+      sec = `0${sec}`;
+    }
+    if (min < 10) {
+      min = `0${min}`;
+    }
+
+    if (parseInt(hours, 10) > 0) {
+      return `${parseInt(hours, 10)}:${min}:${sec}`;
+    } else if (min === 0) {
+      return `${sec}`;
+    } else {
+      return `${min}:${sec}`;
+    }
+  };
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////
   //  Function:       getVideoStatus
   //
   //  Description:    this function goes to get the current status of the video from the
@@ -60,11 +99,12 @@ const App = () => {
   //
   //  Return:         NA
   ///////////////////////////////////////////////////////////////////////////////////////////////
-  const media = (status) => {
+  const media = (status = "null", seconds = 0) => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       var msg = {
         function: "media",
         frontBack: status,
+        time: seconds,
       };
 
       chrome.tabs.sendMessage(tabs[0].id, msg);
@@ -125,7 +165,18 @@ const App = () => {
           ? searchData.map((data) => (
               <div key={data.time} className="searchResult">
                 <p>{data.text}</p>
-                <p style={{ paddingLeft: "2rem" }}>{data.time}</p>
+                <button
+                  style={{
+                    maxWidth: "50px",
+                    maxHeight: "20px",
+                    boxSizing: "border-box",
+                  }}
+                  onClick={() => {
+                    media("null", data.time);
+                  }}
+                >
+                  {secondsToHms(data.time)}
+                </button>
               </div>
             ))
           : " "}
