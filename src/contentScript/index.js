@@ -46,7 +46,6 @@ const playback = (request, sender, sendResponse) => {
             `https://team-10-maptube.azurewebsites.net/get_sponsors?id=${request.videoID}`
           )
           .then(function (response) {
-            console.log(response.data, "response AXIOS");
             clearTime();
             videoLength = video.duration;
             timeVar = setInterval(() => checkTime(response, video), 1500);
@@ -65,10 +64,8 @@ const playback = (request, sender, sendResponse) => {
         }
         break;
       case "search":
-        console.log("search ran");
         clearTime();
-        console.log("search term:", request.term);
-        console.log("video ID:", currentVideoID);
+        
         axios
           .post(
             `https://team-10-maptube.azurewebsites.net/get_search?id=${currentVideoID}&term=${request.term}`
@@ -113,16 +110,18 @@ const checkTime = (response, video) => {
     }
 
     if (currentVideoID !== prevID) {
-      prevID = currentVideoID;
+      
       var tempTime = Math.floor(videoLength/10);
       try {
         axios.post(
-          `https://team-10-maptube.azurewebsites.net/get_analytics?id=${prevID}&dataArray=${data}`
+          `https://team-10-maptube.azurewebsites.net/store_analytics?id=${prevID}&dataArray=${data}`
         )
       } catch (err) {
         console.log(err);
       }
-      console.log("Video Length: ", tempTime);
+      console.log(`https://team-10-maptube.azurewebsites.net/store_analytics?id=${prevID}&dataArray=${data}`);
+      prevID = currentVideoID;
+      
       data.length = 0;
       data.length = tempTime;
       for(var z = 0; z < data.length; z++) {  
@@ -133,7 +132,7 @@ const checkTime = (response, video) => {
       var currentElement = Math.floor(video.currentTime/10);
       data[currentElement] = 1;
       
-      console.log(data);
+      
     }
   } catch (err) {
     console.log(err);
