@@ -1,5 +1,6 @@
 /*global chrome*/
 import "./App.css";
+import logo from "./assets/logo-red.png";
 
 import { useState, useEffect } from "react";
 const App = () => {
@@ -8,7 +9,6 @@ const App = () => {
   const [playBack, setPlayBack] = useState(null);
   const [searchData, setSearchData] = useState(null);
   const [videoTitle, setVideoTitle] = useState(null);
-  const [videoChannel, setVideoChannel] = useState(null);
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -19,7 +19,6 @@ const App = () => {
         console.log(response, "statusss");
         if (response) {
           setVideoTitle(response.videoTitle);
-          setVideoChannel(response.videoChannel);
           if (response.paused) {
             setPlayBack(true);
           } else {
@@ -134,18 +133,24 @@ const App = () => {
           setSearchData(response.data.search);
         } else {
           console.log("error", response);
+          setSearchData([
+            {
+              text: "this video does not have captions",
+              time: "",
+              display: "none",
+            },
+          ]);
         }
       });
+      return true;
     });
-    return true;
   };
 
   return (
     <div className="App">
       <div className="info">
-        <p>Maptube</p>
-        {videoTitle ? <p>Title: {videoTitle}</p> : <p>video title not found</p>}
-        {videoChannel ? <p>Channel: {videoChannel}</p> : ""}
+        <img src={logo} alt="logo" className="Logo" />
+        {videoTitle ? <p>Title: {videoTitle}</p> : <p>Video title not found</p>}
         <input
           type="text"
           value={searchTerm}
@@ -170,6 +175,7 @@ const App = () => {
                     maxWidth: "50px",
                     maxHeight: "20px",
                     boxSizing: "border-box",
+                    display: data.display ? data.display : "",
                   }}
                   onClick={() => {
                     media("null", data.time);
@@ -179,7 +185,7 @@ const App = () => {
                 </button>
               </div>
             ))
-          : " "}
+          : ""}
       </div>
 
       <div className="media">

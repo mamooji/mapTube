@@ -22,12 +22,11 @@ const playback = (request, sender, sendResponse) => {
   var video = document.querySelector("video");
   var title = document.querySelector("#container > h1 > yt-formatted-string")
     .textContent;
-  var channel = document.querySelector("#text > a").textContent;
 
   if (video) {
     switch (request.function) {
       case "status":
-        status(request, video, sendResponse, title, channel);
+        status(request, video, sendResponse, title);
         // console.log("status ran");
         // if (video.paused) {
         //   sendResponse({
@@ -53,7 +52,6 @@ const playback = (request, sender, sendResponse) => {
         // }
         break;
       case "id":
-        // id(request, video, videoLength, timeVar, currentVideoID);
         console.log("id ran");
         axios
           .post(
@@ -124,18 +122,16 @@ const playback = (request, sender, sendResponse) => {
 //
 //  Return:         NA
 ///////////////////////////////////////////////////////////////////////////////////////////////
-const status = (request, video, sendResponse, title, channel) => {
+const status = (request, video, sendResponse, title) => {
   console.log("status ran");
   if (video.paused) {
     sendResponse({
-      videoChannel: channel,
       videoTitle: title,
       paused: true,
       tabID: request.tabID,
     });
   } else {
     sendResponse({
-      videoChannel: channel,
       videoTitle: title,
       paused: false,
       tabID: request.tabID,
