@@ -4,16 +4,14 @@ function Options() {
   return (
     <div className="App">
       <header className="App-header">
-        <p>
-          Edit <code>src/options/Options.js</code> and save to reload.
-        </p>
+        <p>User Options coming soon....</p>
         <a
           className="App-link"
-          href="https://reactjs.org"
+          href="https://www.maptube.ca/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          MapTube
         </a>
       </header>
     </div>
